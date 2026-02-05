@@ -4,38 +4,13 @@ from .. import models, crud
 from ..domain.employee import Teacher, Officer, Staff, EmployeeBase
 
 
-def prev_month(year: int, month: int):
-    if month == 1:
-        return (year - 1, 12)
-    return (year, month - 1)
-
-
-def any_future_exists(db: Session, employee_id: int, year: int, month: int) -> bool:
-    return (
-        db.query(models.Payroll)
-        .filter(
-            models.Payroll.employee_id == employee_id,
-            (
-                (models.Payroll.year > year)
-                | ((models.Payroll.year == year) & (models.Payroll.month > month))
-            ),
-        )
-        .first()
-        is not None
-    )
-
-
 def can_pay_employee(
     db: Session, employee_id: int, year: int, month: int
 ) -> (bool, str):
+    # Same month salary cannot be paid twice
     if crud.payroll_exists(db, employee_id, month, year):
         return False, "duplicate-month"
-    if any_future_exists(db, employee_id, year, month):
-        return False, "future-month-exists"
-    latest = crud.latest_payroll_for_employee(db, employee_id)
-    if latest:
-        if (latest.year, latest.month) != prev_month(year, month):
-            return False, "not-sequential"
+
     return True, "ok"
 
 

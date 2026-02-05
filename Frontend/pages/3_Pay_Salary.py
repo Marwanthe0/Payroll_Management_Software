@@ -38,9 +38,7 @@ with col2:
 st.warning(
     """
     ⚠️ **Important Rules**
-    - A month’s salary cannot be paid twice  
-    - Salary must be paid sequentially  
-    - Future month salary is not allowed
+    - A month’s salary cannot be paid twice for the same employee.
     """
 )
 
