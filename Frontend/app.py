@@ -6,8 +6,8 @@ from services.api import get_employees, get_payroll_summary
 
 # ---------- Page Config ----------
 st.set_page_config(
-    page_title="Home",
-    page_icon="🏠",
+    page_title="Payroll Management Software",
+    page_icon="💵",
     layout="wide",
 )
 
