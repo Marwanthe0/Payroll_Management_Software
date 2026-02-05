@@ -73,3 +73,20 @@ def get_payroll_summary(year, month, faculty=None, department=None, designation=
 
     except Exception as e:
         return False, str(e)
+
+
+def get_salary_receipt(employee_id, year, month):
+    try:
+        response = requests.get(
+            f"{API_BASE}/payrolls/receipt/{employee_id}",
+            params={"year": year, "month": month},
+            timeout=5,
+        )
+
+        if response.status_code == 200:
+            return True, response.json()
+        else:
+            return False, response.text
+
+    except Exception as e:
+        return False, str(e)
