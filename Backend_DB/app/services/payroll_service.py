@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
 from ..config import settings
 from .. import models, crud
-from ..domain.employee import Teacher, Officer, Staff, EmployeeBase
 
 
 def can_pay_employee(
@@ -25,28 +24,27 @@ def pay_all(db: Session, year: int, month: int):
         if not ok:
             errors[emp.id] = reason
             continue
-        domain_cls = {"teacher": Teacher, "officer": Officer, "staff": Staff}.get(
-            emp.emp_type.lower(), EmployeeBase
-        )
-        domain_obj = domain_cls(
-            id=emp.id,
-            name=emp.name,
-            basic_salary=emp.basic_salary,
-            designation=emp.designation,
-            faculty=emp.faculty,
-            department=emp.department,
-        )
-        allowance_vals = {
-            "hra": emp.basic_salary * 0.20,  # 20%
-            "ta": emp.basic_salary * 0.10,  # 10%
-            "medical": 2000.0,  # fixed
-        }
-        deduction_vals = {
-            "tax": emp.basic_salary * 0.05,  # 5%
-            "pf": emp.basic_salary * 0.03,  # 3%
-        }
+        # Calculate allowances
+        allowance_vals = {}
+        for name, rate in settings.ALLOWANCES.items():
+            if isinstance(rate, float) and rate < 1:
+                allowance_vals[name] = emp.basic_salary * rate
+            else:
+                allowance_vals[name] = rate
 
-        net = domain_obj.net_salary(allowance_vals, deduction_vals)
+        # Calculate deductions
+        deduction_vals = {}
+        for name, rate in settings.DEDUCTIONS.items():
+            if isinstance(rate, float) and rate < 1:
+                deduction_vals[name] = emp.basic_salary * rate
+            else:
+                deduction_vals[name] = rate
+
+        net = (
+            emp.basic_salary
+            + sum(allowance_vals.values())
+            - sum(deduction_vals.values())
+        )
         payroll = models.Payroll(
             employee_id=emp.id,
             month=month,
@@ -90,11 +88,7 @@ def payroll_summary(
     total = 0.0
 
     for payroll, emp in query.all():
-        allowances = sum((getattr(payroll, a, 0.0) or 0.0) for a in settings.ALLOWANCES)
-        deductions = sum((getattr(payroll, d, 0.0) or 0.0) for d in settings.DEDUCTIONS)
-
-        net = payroll.basic_salary + allowances - deductions
-        total += net
+        total += payroll.net_salary
 
     return {
         "year": year,

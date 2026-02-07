@@ -40,7 +40,6 @@ st.markdown(
             padding: 30px;
             border-radius: 18px;
             text-align: center;
-            box🍃
             box-shadow: 0 15px 30px rgba(0,0,0,0.35);
         }
 

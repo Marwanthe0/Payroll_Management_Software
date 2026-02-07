@@ -49,13 +49,13 @@ class Payroll(Base):
     net_salary = Column(Float, default=0.0)
 
     # -------- Allowances --------
-    hra = Column(Float, default=0.0)
-    ta = Column(Float, default=0.0)
-    medical = Column(Float, default=0.0)
+    hra = Column(Float, default=0.2)
+    ta = Column(Float, default=0.12)
+    medical = Column(Float, default=0.5)
 
     # -------- Deductions --------
-    tax = Column(Float, default=0.0)
-    pf = Column(Float, default=0.0)
+    tax = Column(Float, default=0.18)
+    pf = Column(Float, default=0.12)
 
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 

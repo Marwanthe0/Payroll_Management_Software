@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional
 
+
 class EmployeeBase(BaseModel):
     emp_type: str
     name: str
@@ -12,10 +13,13 @@ class EmployeeBase(BaseModel):
     department: Optional[str] = None
     basic_salary: float = 0.0
 
+
 class EmployeeCreate(EmployeeBase):
     pass
 
+
 class EmployeeOut(EmployeeBase):
     id: int
+
     class Config:
         orm_mode = True

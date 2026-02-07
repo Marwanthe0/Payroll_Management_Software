@@ -41,8 +41,15 @@ def get_salary_receipt(
 
     payroll, employee = result
 
-    allowances = {a: getattr(payroll, a, 0.0) or 0.0 for a in settings.ALLOWANCES}
-    deductions = {d: getattr(payroll, d, 0.0) or 0.0 for d in settings.DEDUCTIONS}
+    allowances = {}
+    for a in settings.ALLOWANCES:
+        display_name = settings.ALLOWANCE_NAMES.get(a, a.upper())
+        allowances[display_name] = getattr(payroll, a, 0.0) or 0.0
+
+    deductions = {}
+    for d in settings.DEDUCTIONS:
+        display_name = settings.DEDUCTION_NAMES.get(d, d.upper())
+        deductions[display_name] = getattr(payroll, d, 0.0) or 0.0
 
     return {
         "employee_id": employee.id,

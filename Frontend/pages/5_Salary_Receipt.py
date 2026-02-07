@@ -76,12 +76,12 @@ if st.button("View Salary Receipt"):
             st.markdown("### ➕ Allowances")
             st.write("Basic Salary:", basic)
             for k, v in allowances.items():
-                st.write(f"{k.upper()}:", v)
+                st.write(f"{k}:", v)
 
         with col2:
             st.markdown("### ➖ Deductions")
             for k, v in deductions.items():
-                st.write(f"{k.upper()}:", v)
+                st.write(f"{k}:", v)
 
         net_salary = basic + sum(allowances.values()) - sum(deductions.values())
 
